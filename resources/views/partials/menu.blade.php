@@ -96,6 +96,83 @@
             </div>
         @endcan
 
+        {{-- PRODUCT MANAGEMENT --}}
+@can('product_access')
+<div x-data="{ open:
+    {{ request()->is('admin/categories*')
+    || request()->is('admin/subcategories*')
+    || request()->is('admin/products*') ? 'true' : 'false' }}
+}">
+
+    <button @click="open = !open"
+            class="group w-full flex items-center justify-between px-3 py-2 rounded
+                   hover:bg-slate-800 transition">
+        <span class="flex items-center gap-3">
+            <i class="fas fa-box text-slate-400 group-hover:text-white transition"></i>
+            Product Management
+        </span>
+
+        <i class="fas fa-chevron-down text-xs transition-transform duration-300"
+           :class="open ? 'rotate-180' : ''"></i>
+    </button>
+
+    {{-- DROPDOWN --}}
+    <div x-show="open"
+         x-transition
+         class="ml-6 mt-1 space-y-1">
+
+        {{-- CATEGORY --}}
+        @can('category_access')
+            <a href="{{ route('admin.categories.index') }}"
+               class="block px-3 py-2 rounded transition
+               {{ request()->is('admin/categories*')
+                    ? 'bg-slate-800 text-white'
+                    : 'hover:bg-slate-800 hover:pl-4' }}">
+                Categories
+            </a>
+        @endcan
+
+        {{-- SUBCATEGORY --}}
+        @can('subcategory_access')
+            <a href="{{ route('admin.subcategories.index') }}"
+               class="block px-3 py-2 rounded transition
+               {{ request()->is('admin/subcategories*')
+                    ? 'bg-slate-800 text-white'
+                    : 'hover:bg-slate-800 hover:pl-4' }}">
+                Subcategories
+            </a>
+        @endcan
+
+        {{-- PRODUCT --}}
+        @can('product_access')
+            <a href="{{ route('admin.products.index') }}"
+               class="block px-3 py-2 rounded transition
+               {{ request()->is('admin/products*')
+                    ? 'bg-slate-800 text-white'
+                    : 'hover:bg-slate-800 hover:pl-4' }}">
+                Products
+            </a>
+        @endcan
+
+        
+
+    </div>
+</div>
+@endcan
+
+{{-- ORDERS --}}
+@can('order_access')
+<a href="{{ route('admin.orders.index') }}"
+   class="group flex items-center gap-3 px-3 py-2 rounded transition
+   {{ request()->is('admin/orders*')
+        ? 'bg-slate-800 text-white'
+        : 'hover:bg-slate-800 hover:pl-4' }}">
+
+    <i class="fas fa-shopping-cart text-slate-400 group-hover:text-white transition"></i>
+    Orders
+</a>
+@endcan
+
         {{-- CHANGE PASSWORD --}}
         @if(file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))
             @can('profile_password_edit')

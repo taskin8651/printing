@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubcategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\OrderController;
+
 Route::redirect('/', '/login');
 Route::get('/home', function () {
     if (session('status')) {
@@ -28,13 +33,36 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Audit Logs
     Route::resource('audit-logs', 'AuditLogsController', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
 
-    // Epaper
-    Route::delete('epapers/destroy', 'EpaperController@massDestroy')->name('epapers.massDestroy');
-    Route::post('epapers/media', 'EpaperController@storeMedia')->name('epapers.storeMedia');
-    Route::post('epapers/ckmedia', 'EpaperController@storeCKEditorImages')->name('epapers.storeCKEditorImages');
-    Route::post('epapers/parse-csv-import', 'EpaperController@parseCsvImport')->name('epapers.parseCsvImport');
-    Route::post('epapers/process-csv-import', 'EpaperController@processCsvImport')->name('epapers.processCsvImport');
-    Route::resource('epapers', 'EpaperController');
+       // ✅ Category CRUD
+    Route::resource('categories', CategoryController::class);
+
+    // ✅ Subcategory CRUD
+    Route::resource('subcategories', SubcategoryController::class);
+
+    // ✅ Product CRUD
+    Route::resource('products', ProductController::class);
+    Route::get('get-subcategories/{id}', function ($id) {
+    return \App\Models\Subcategory::where('category_id', $id)->get();
+    });
+    
+    // ✅ Order Management
+    Route::resource('orders', OrderController::class)->only(['index','show','destroy']);
+
+    Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])
+        ->name('orders.status');
+
+    // ✅ Testimonial CRUD
+    Route::resource('testimonials', TestimonialController::class);
+    // ✅ Blog CRUD
+    Route::resource('blogs', BlogController::class);
+
+    // ✅ Brand CRUD
+    Route::resource('brands', BrandController::class);
+    // ✅ Setting Management
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+
+
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
     // Change password
@@ -46,15 +74,3 @@ Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 
     }
 });
 
-
-Route::get('/epaper', [App\Http\Controllers\Custom\EpaperController::class, 'index'])->name('epaper.index');
-Route::get('/epaper/{epaper}', [App\Http\Controllers\Custom\EpaperController::class, 'show'])->name('custom.epaper-detail');
-Route::get('/pdf-view/{media}', function ($media) {
-    $file = \Spatie\MediaLibrary\MediaCollections\Models\Media::findOrFail($media);
-    $path = storage_path("app/public/{$file->id}/{$file->file_name}");
-
-    return response()->file($path, [
-        'Content-Type' => 'application/pdf',
-        'Cross-Origin-Resource-Policy' => 'cross-origin',
-    ]);
-})->name('pdf.view');
