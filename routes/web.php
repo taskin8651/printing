@@ -4,6 +4,14 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Custom\IndexController;
+use App\Http\Controllers\Custom\ShopController;
+
+
 
 Route::redirect('/', '/login');
 Route::get('/home', function () {
@@ -74,3 +82,10 @@ Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 
     }
 });
 
+Route::get('/', [IndexController::class, 'index'])->name('custom.index');
+
+
+Route::get('/category/{slug}', [ShopController::class, 'category'])->name('categories');
+Route::get('/shop/{subcategory}', [ShopController::class, 'products'])->name('shop');
+Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.show');
+Route::get('/shop/{slug}', [ShopController::class, 'index'])->name('shop');

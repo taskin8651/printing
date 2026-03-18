@@ -28,8 +28,11 @@ class Product extends Model implements HasMedia
         'meta_description', // ✅ SEO
 
         'is_featured',      // optional
+        'is_best_seller',   // optional
+        'is_trending',      // optional
 
         'status',
+
     ];
 
     /*
