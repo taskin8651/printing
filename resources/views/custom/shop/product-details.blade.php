@@ -155,52 +155,33 @@
     <h4>Selected Price: ₹<span id="selectedPrice">{{ $product->min_price }}</span></h4>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
 
-    const radios = document.querySelectorAll('.price-radio');
-    const qtyInput = document.getElementById('quantity');
-    const priceBox = document.getElementById('selectedPrice');
-
-    // 👉 Radio select
-    radios.forEach(radio => {
-        radio.addEventListener('change', function () {
-
-            let qty = this.getAttribute('data-qty');
-            let price = this.getAttribute('data-price');
-
-            qtyInput.value = qty;
-            priceBox.innerText = price;
-        });
-    });
-
-    // 👉 Manual quantity change
-    qtyInput.addEventListener('input', function () {
-
-        let enteredQty = parseInt(this.value);
-        let matchedPrice = {{ $product->min_price }};
-
-        radios.forEach(radio => {
-            let rowQty = parseInt(radio.getAttribute('data-qty'));
-            let rowPrice = radio.getAttribute('data-price');
-
-            if (enteredQty >= rowQty) {
-                matchedPrice = rowPrice;
-                radio.checked = true; // auto select radio
-            }
-        });
-
-        priceBox.innerText = matchedPrice;
-    });
-
-});
-</script>
 
         <!-- 🛒 BUTTONS -->
         <div class="shop-btn mt-3">
-            <a href="#" class="theme-btn">
-                <span>Add to Cart</span>
-            </a>
+        <form id="addToCartForm" action="{{ route('cart.add') }}" method="POST">
+    @csrf
+
+    <!-- 🔥 PRODUCT -->
+    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+    <!-- 🔢 QUANTITY -->
+    <input type="hidden" name="quantity" id="cartQty" value="1">
+
+    <!-- 💰 PRICE -->
+    <input type="hidden" name="price" id="cartPrice" value="{{ $product->min_price }}">
+
+    <!-- 🎨 VARIANTS (Dynamic) -->
+    <div id="variantInputs"></div>
+
+    <!-- ⚠️ OPTIONAL (DEBUG SHOW) -->
+    {{-- <small>Qty: <span id="debugQty">1</span></small> --}}
+
+    <!-- 🛒 BUTTON -->
+    <button type="submit" class="theme-btn w-100">
+        <span>Add to Cart</span>
+    </button>
+</form>
 
             <a href="#" class="theme-btn">
                 <span>Share</span>
@@ -212,6 +193,85 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 </div>
             </div>
+
+            
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const radios = document.querySelectorAll('.price-radio');
+    const qtyInput = document.getElementById('quantity');
+    const priceBox = document.getElementById('selectedPrice');
+
+    const cartQty = document.getElementById('cartQty');
+    const cartPrice = document.getElementById('cartPrice');
+
+    // 👉 Radio select
+    radios.forEach(radio => {
+        radio.addEventListener('change', function () {
+
+            let qty = this.dataset.qty;
+            let price = this.dataset.price;
+
+            qtyInput.value = qty;
+            priceBox.innerText = price;
+
+            cartQty.value = qty;
+            cartPrice.value = price;
+        });
+    });
+
+    // 👉 Manual quantity change
+    qtyInput.addEventListener('input', function () {
+
+        let enteredQty = parseInt(this.value);
+        let matchedPrice = {{ $product->min_price }};
+
+        radios.forEach(radio => {
+            let rowQty = parseInt(radio.dataset.qty);
+            let rowPrice = radio.dataset.price;
+
+            if (enteredQty >= rowQty) {
+                matchedPrice = rowPrice;
+                radio.checked = true;
+            }
+        });
+
+        priceBox.innerText = matchedPrice;
+        cartQty.value = enteredQty;
+        cartPrice.value = matchedPrice;
+    });
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById('addToCartForm');
+    const variantInputs = document.getElementById('variantInputs');
+
+    form.addEventListener('submit', function () {
+
+        variantInputs.innerHTML = '';
+
+        let checkedVariants = document.querySelectorAll('.variant-checkbox:checked');
+
+        checkedVariants.forEach((el) => {
+
+            let input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'variants[]';
+            input.value = el.value;
+
+            variantInputs.appendChild(input);
+        });
+
+        // 👉 Debug (optional)
+        console.log("Variants:", checkedVariants.length);
+    });
+
+});
+</script>
 
             <!-- 🔥 DESCRIPTION TAB -->
           <div class="single-tab">

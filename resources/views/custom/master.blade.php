@@ -3,8 +3,7 @@ use App\Models\Category;
 use App\Models\Subcategory;
 use App\Models\Setting;
 
-$categories = Category::all();
-$subcategories = Subcategory::all();
+$categories = Category::with(['subcategories.products'])->get();
 $settings = Setting::first();
 @endphp
 
@@ -116,7 +115,7 @@ $settings = Setting::first();
                     <div class="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
                         <div class="offcanvas__logo">
                             <a href="/">
-                                <img src="{{ asset('assets/img/logo/logo.svg') }}" alt="logo-img">
+                                <img src="{{ asset('assets/img/logo/logo.svg') }}" alt="logo-img"><img src="{{ $settings->getFirstMediaUrl('logo') ?: asset('assets/img/logo/logo.svg') }}" alt="logo-img">
                             </a>
                         </div>
                         <div class="offcanvas__close">
@@ -126,7 +125,7 @@ $settings = Setting::first();
                         </div>
                     </div>
                     <p class="text d-none d-xl-block">
-                        This involves interactions between a business and its customers. It's about meeting customers' needs and resolving their problems. Effective customer service is crucial.
+                        {{ $settings->getFirstMediaUrl('contact_info') ?: 'Default contact info' }}
                     </p>
                     <div class="mobile-menu fix mb-3"></div>
                     <div class="offcanvas__contact">
@@ -137,7 +136,9 @@ $settings = Setting::first();
                                     <i class="fal fa-map-marker-alt"></i>
                                 </div>
                                 <div class="offcanvas__contact-text">
-                                    <a target="_blank" href="#">Main Street, Melbourne, Australia</a>
+                                    <a target="_blank" href="{{ $settings->getFirstMediaUrl('contact_address') ?: '#' }}">
+                                        {{ $settings->getFirstMediaUrl('contact_address') ?: 'Default contact address' }}
+                                    </a>
                                 </div>
                             </li>
                             <li class="d-flex align-items-center">
@@ -180,254 +181,198 @@ $settings = Setting::first();
         </div>
     </div>
     <div class="offcanvas__overlay"></div>
-
-    <!-- Header Top Section Start -->
-    <div class="header-top-section">
+<!-- Header Top Section Start -->
+    <div class="header-top-section py-1">
         <div class="container-fluid">
-            <div class="header-top-wrapper justify-content-center">
-                <p>Happiness guarantee - Free shipping over $55 - Delivery in 3-6 business days</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Middle Section Start -->
-    <div class="middle-section">
-        <div class="container-fluid">
-            <div class="header-middle-wrapper">
-            
-                <a href="/" class="logo">
-                    <img src="{{ asset('assets/img/logo/logo.svg') }}" alt="img">
-                </a>
-
-                
-                <div class="header-right d-flex justify-content-end align-items-center">
-                    <a href="#0" class="search-trigger search-icon"><i class="fal fa-search"></i></a>
-                    <a href="sign-in.html" class="user-icon"><i class="far fa-user"></i></a>
-                    <div class="menu-cart">
-                        <button id="openButton" class="cart-icon">
-                            <i class="far fa-shopping-cart"></i>
-                        </button>
+            <div class="header-top-wrapper">
+                <ul class="contact-list">
+                    <li>
+                        <i class="far fa-envelope"></i>
+                        <a href="{{ $settings->email }}">{{$settings->email }} </a>
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{$settings->address}}
+                    </li>
+                </ul>
+                <div class="header-top-right">
+                    <div class="social-icon d-flex align-items-center">
+                        <a href="{{ $settings->facebook_url }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{{ $settings->twitter_url }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="{{ $settings->instagram_url }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ $settings->pinterest_url }}" target="_blank"><i class="fab fa-pinterest-p"></i></a>
                     </div>
+                   
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="header-sticky" class="header-4">
-        <div class="container">
-            <div class="mega-menu-wrapper">
-                <div class="header-main">
-                    <a href="index.html" class="header-logo">
-                        <img src="assets/img/logo/logo.svg" alt="img">
-                    </a>
-                    <div class="mean__menu-wrapper">
-                        <div class="main-menu">
-                            <nav id="mobile-menu">
-                              <ul class="main-nav">
-    @foreach($categories as $cat)
-        <li class="nav-item has-mega" data-id="{{ $cat->id }}">
-<a href="{{ route('categories', $cat->slug) }}">
-    {{ $cat->name }}
-</a>
-        </li>
-    @endforeach
-</ul>
+    <!-- Header Area Start -->
+    <header class="header-section-1">
+        <div id="header-sticky" class="header-1">
+            <div class="container-fluid">
+                <div class="mega-menu-wrapper">
+                    <div class="header-main">
+                        <div class="header-left">
+                            <div class="logo">
+                                <a href="/" class="header-logo">
+                                   <img src="{{ $settings->getFirstMediaUrl('logo') ?: asset('assets/img/logo/logo.svg') }}" alt="logo-img">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mean__menu-wrapper">
+                            <div class="main-menu">
+                                <nav id="mobile-menu">
 
-<!-- MEGA MENU -->
-<div class="mega-menu">
+<ul>
 
-    @foreach($categories as $cat)
-        <div class="mega-content {{ $loop->first ? 'active' : '' }}" id="mega-{{ $cat->id }}">
+@foreach($categories as $category)
+<li class="has-dropdown menu-thumb">
 
-            <div class="mega-grid">
+    <!-- 🔥 CATEGORY -->
+    <a href="{{ route('categories', $category->slug) }}">
+        {{ $category->name }}
+    </a>
 
-                @foreach($cat->subcategories as $sub)
-                    <div class="mega-col">
+    <!-- 🔥 DROPDOWN -->
+    <ul class="submenu">
+        <li class="border-top-none">
+<div class="container">
+            <div class="row ">
 
-                        <h5>
-                            <a href="{{ route('shop', $sub->slug) }}">
-                                {{ $sub->name }}
+                @foreach($category->subcategories->take(6) as $sub)
+                <div class="col-lg-3 col-md-6">
+
+                    <!-- SUBCATEGORY -->
+                    <h6 class="home-menu-title">
+                        {{ $sub->name }}
+                    </h6>
+
+                    <!-- PRODUCTS -->
+                    <ul class="list-unstyled">
+
+                        @forelse($sub->products->take(5) as $product)
+                        <li>
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                {{ $product->name }}
                             </a>
-                        </h5>
+                        </li>
+                        @empty
+                        <li>
+                            <span>No Products</span>
+                        </li>
+                        @endforelse
 
-                        <ul>
-                            @foreach($sub->products->take(5) as $product)
-                                <li>
-                                    <a href="">
-                                        {{ $product->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
+                    </ul>
 
-                    </div>
+                </div>
                 @endforeach
 
             </div>
+            </div>
 
-        </div>
-    @endforeach
+        </li>
+    </ul>
 
-</div>
+
+</li>
+@endforeach
+
+</ul>
 
 <style>
-    /* NAV */
-.main-nav {
-    display: flex;
-    gap: 25px;
-    align-items: center;
+   /* 🔥 FORCE MEGA MENU FIX */
+.main-menu ul li .submenu {
+    width: 1200px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 30px !important;
+    display: block;
 }
 
-/* MEGA MENU */
-.mega-menu {
-    position: absolute;
+/* 🔥 IMPORTANT: li full width */
+.main-menu ul li.has-dropdown {
+    position: static !important;
+}
+
+/* 🔥 submenu absolute fix */
+.main-menu ul li .submenu {
+    position: absolute !important;
     top: 100%;
-    left: 0;
-    width: 100%;
-    background: #f3f3f3;
-    display: none;
-    padding: 30px;
     z-index: 999;
 }
 
-/* SHOW */
-.main-nav:hover + .mega-menu,
-.mega-menu:hover {
-    display: block;
+/* 🔥 inner spacing */
+.main-menu ul li .submenu .row {
+    width: 100%;
 }
 
-/* GRID */
-.mega-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 30px;
+/* 🔥 column spacing */
+.main-menu ul li .submenu .col-lg-3 {
+    margin-bottom: 20px;
 }
 
-/* CONTENT SWITCH */
-.mega-content {
-    display: none;
-}
-.mega-content.active {
+/* 🔥 product list */
+.main-menu ul li .submenu ul li a {
     display: block;
+    font-size: 13px;
+    padding: 4px 0;
 }
 </style>
-
-<script>
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('mouseenter', function () {
-
-            let id = this.dataset.id;
-
-            // remove active
-            document.querySelectorAll('.mega-content').forEach(c => c.classList.remove('active'));
-
-            // show selected
-            document.getElementById('mega-' + id).classList.add('active');
-
-            // show mega menu
-            document.querySelector('.mega-menu').style.display = 'block';
-        });
-    });
-
-    // hide when leaving
-    document.querySelector('.mega-menu').addEventListener('mouseleave', function () {
-        this.style.display = 'none';
-    });
-</script>
-                            </nav>
-                        </div>
-                    </div>
-                    <div class="header-right d-flex justify-content-end align-items-center">
-                        <div class="header__hamburger d-xl-none my-auto">
-                            <div class="sidebar__toggle">
-                               <img src="assets/img/toggle.svg" alt="img">
+                                </nav>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                        <div class="header-right d-flex justify-content-end align-items-center">
+                            
+                           @php
+$cart = session('cart', []);
+$count = count($cart);
+@endphp
 
+<div class="menu-cart">
+
+    <a href="{{ route('cart.index') }}" >
+        <i class="far fa-shopping-cart"></i>
+    </a>
+
+    @if($count > 0)
+    <span class="cart-count">
+        {{ $count }}
+    </span>
+    @endif
+
+</div>
+<style>
+    .cart-count{
+        position: absolute;
+    top: -7px;
+    right: -12px;
+    content: "3";
+    width: 18px;
+    line-height: 18px;
+    height: 18px;
+    border-radius: 18px;
+    background-color: var(--theme);
+    color: var(--white);
+    font-size: 12px;
+    text-align: center;
+    font-weight: 500;
+    }
+    
+</style>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
     <!-- Sidebar Area Here -->
-    <div id="targetElement" class="side_bar slideInRight side_bar_hidden">
-        <div class="side_bar_overlay"></div>
-        <div class="cart-title mb-50">
-            <h4>Shopping cart</h4>
-        </div>
-        <div class="cartmini__widget">
-            <div class="cartmini__widget-item">
-                <div class="cartmini__thumb">
-                    <a href="product-details.html">
-                   <img src="assets/img/header/product-1.jpg" alt="img">
-                </a>
-                </div>
-                <div class="cartmini__content">
-                    <h5><a href="product-details.html">Level Bolt Smart Lock</a></h5>
-                    <div class="cartmini__price-wrapper">
-                        <span class="cartmini__price">$46.00</span>
-                        <span class="cartmini__quantity">x2</span>
-                    </div>
-                </div>
-                <button class="cartmini__del"><i class="fal fa-times"></i></button>
-            </div>
-            <div class="cartmini__widget-item">
-                <div class="cartmini__thumb">
-                    <a href="product-details.html">
-                        <img src="assets/img/header/product-2.jpg" alt="img">
-                    </a>
-                </div>
-                <div class="cartmini__content">
-                    <h5><a href="product-details.html">Trademil for younger</a></h5>
-                    <div class="cartmini__price-wrapper">
-                        <span class="cartmini__price">$78.00</span>
-                        <span class="cartmini__quantity">x1</span>
-                    </div>
-                </div>
-                <button class="cartmini__del"><i class="fal fa-times"></i></button>
-            </div>
-            <div class="cartmini__widget-item">
-                <div class="cartmini__thumb">
-                    <a href="product-details.html">
-                        <img src="assets/img/header/product-3.jpg" alt="img">
-                    </a>
-                </div>
-                <div class="cartmini__content">
-                    <h5><a href="product-details.html">ViewSonic VP2756-2K</a></h5>
-                    <div class="cartmini__price-wrapper">
-                        <span class="cartmini__price">$98.00</span>
-                        <span class="cartmini__quantity">x3</span>
-                    </div>
-                </div>
-                <button class="cartmini__del"><i class="fal fa-times"></i></button>
-            </div>
-            <div class="cartmini__checkout">
-                <div class="cartmini__checkout-title mb-4">
-                    <h4>Subtotal:</h4>
-                    <span>$113.00</span>
-                </div>
-                <div class="cartmini__checkout-btn">
-                    <a href="shop-cart.html" class="theme-btn mb-2 w-100"> view cart</a>
-                    <a href="checkout.html" class="theme-btn w-100 style-2"> checkout</a>
-                </div>
-            </div>
-        </div>
-        <button id="closeButton" class="x-mark-icon"><i class="fas fa-times"></i></button>
-    </div>
+   
 
     <!-- Search Area Start -->
-    <div class="search-wrap">
-        <div class="search-inner">
-            <i class="fas fa-times search-close" id="search-close"></i>
-            <div class="search-cell">
-                <form method="get">
-                    <div class="search-field-holder">
-                        <input type="search" class="main-search-input" placeholder="Search...">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    
 @yield('content')
 
 
@@ -440,24 +385,22 @@ $settings = Setting::first();
                     <div class="col-xl-4 col-sm-6 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay=".2s">
                         <div class="single-footer-widget">
                             <div class="widget-head">
-                                <a href="index.html">
-                                    <img src="assets/img/logo/logo.svg" alt="logo-img">
-                                </a>
+                                <a href="/">
+                        <img src="{{ $settings->getFirstMediaUrl('logo') ?: asset('assets/img/logo/logo.svg') }}" alt="logo-img">   
+                                                 </a>
                             </div>
                             <div class="footer-content">
                             <p>
-                                    A new way to make the payments easy
-                                    reliable <br> and 100% secure. claritatem itamconse quat. <br> Exerci tation ullamcorper.
+                                    {{ $settings->footer_text ?: 'Default contact info' }}
                             </p>
-                                <div class="play-app">
-                                    <img src="assets/img/play.png" alt="img">
-                                    <img src="assets/img/app.png" alt="img">
-                                </div>
+                              
                                 <div class="social-icon d-flex align-items-center">
-                                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="#"><i class="fab fa-twitter"></i></a>
-                                    <a href="#"><i class="fab fa-vimeo-v"></i></a>
-                                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                                    <a href="{{ $settings->facebook }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="{{ $settings->instagram }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                                    <a href="{{ $settings->youtube }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                                    <a href="{{ $settings->twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                                    <a href="{{ $settings->linkedin }}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+
                                 </div>
                             </div>
                         </div>
@@ -469,28 +412,21 @@ $settings = Setting::first();
                             </div>
                             <ul class="list-items">
                                 <li>
-                                    <a href="contact.html">
-                                        Contact us
+                                    <a href="/">
+                                        Home
                                     </a>
                                 </li>
+                               
+                               
+                               
                                 <li>
-                                    <a href="service-details.html">
-                                        How it Works
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Create
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Explore
-                                    </a>
+                                    <a href="{{ route('blog.show', 'latest') }}">
+                                        Blog
+                                    </a>    
                                 </li>
                                 <li>
                                     <a href="contact.html">
-                                        Terms &amp; Services
+                                        Contact
                                     </a>
                                 </li>
                             </ul>
@@ -499,68 +435,38 @@ $settings = Setting::first();
                     <div class="col-xl-3 col-sm-6 col-md-6 col-lg-5 ps-lg-5 wow fadeInUp" data-wow-delay=".6s">
                         <div class="single-footer-widget">
                             <div class="widget-head">
-                                <h3>Our office</h3>
+                                <h3>Our Categories</h3>
                             </div>
                             <ul class="list-items">
+                                @foreach($categories as $category)
                                 <li>
-                                    <a href="news.html">
-                                        Newslatter & Blog
+                                    <a href="{{ route('categories', $category->slug) }}">
+                                        {{ $category->name }}
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="contact.html">
-                                        Carrer & Contact
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Monthly Offer
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Affiliate Program
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Referrel Programms
-                                    </a>
-                                </li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
                     <div class="col-xl-3 col-sm-6 col-md-6 col-lg-4 ps-lg-5 wow fadeInUp" data-wow-delay=".6s">
                         <div class="single-footer-widget">
                             <div class="widget-head">
-                                <h3>Find It Fast</h3>
+                                <h3>Map & Location</h3>
                             </div>
                             <ul class="list-items">
-                                <li>
-                                    <a href="service-details.html">
-                                        Flexographic Printing.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Computer & Laptop
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Surface Printing.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Brochure & Home gift
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="service-details.html">
-                                        Digital Printing.
-                                    </a>
-                                </li>
+                                <li >
+    <iframe
+        width="100%"
+        height="200"
+        frameborder="0"
+        style="border:0"
+        src="https://maps.google.com/maps?q={{ urlencode($settings->address) }}&output=embed"
+        allowfullscreen>
+    </iframe>
+</li>
+                     
+
+                                
                             </ul>
                         </div>
                     </div>
@@ -571,7 +477,7 @@ $settings = Setting::first();
             <div class="container">
                 <div class="footer-bottom-wrapper">
                     <p class="wow fadeInUp" data-wow-delay=".3s">Copyright 2025 © . All rights reserved.</p>
-                    <img src="assets/img/card.png" alt="img" class="wow fadeInUp" data-wow-delay=".5s">
+                    
                 </div>
             </div>
         </div>
