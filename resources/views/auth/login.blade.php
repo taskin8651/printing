@@ -1,106 +1,105 @@
-@extends('layouts.app')
+@extends('custom.master')
 @section('content')
 
-<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-
-    <div class="w-full max-w-md bg-white border border-gray-200 rounded-lg shadow-sm">
-
-        {{-- HEADER --}}
-        <div class="px-8 pt-8 pb-4 text-center">
-            <h1 class="text-2xl font-semibold text-gray-900">
-                {{ trans('panel.site_title') }}
-            </h1>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ trans('global.login') }}
-            </p>
+<!--<< Breadcrumb Section Start >>-->
+<div class="breadcrumb-wrapper section-padding bg-cover" style="background-image: url('{{ asset('assets/img/breadcrumb.png') }}');">
+    <div class="container">
+        <div class="page-heading">
+            <div class="breadcrumb-sub-title text-center">
+                <h1 class="wow fadeInUp" data-wow-delay=".3s">Sign In</h1>
+                <ul class="breadcrumb-items wow fadeInUp" data-wow-delay=".5s">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <i class="fal fa-minus"></i>
+                    </li>
+                    <li>Sign In</li>
+                </ul>
+            </div>
         </div>
-
-        {{-- INFO MESSAGE --}}
-        @if(session('message'))
-            <div class="mx-8 mb-4 px-4 py-2 text-sm rounded-md
-                        bg-blue-50 text-blue-700 border border-blue-200">
-                {{ session('message') }}
-            </div>
-        @endif
-
-        {{-- FORM --}}
-        <form method="POST" action="{{ route('login') }}" class="px-8 pb-8 space-y-5">
-            @csrf
-
-            {{-- EMAIL --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ trans('global.login_email') }}
-                </label>
-                <input type="email"
-                       name="email"
-                       value="{{ old('email') }}"
-                       required
-                       autofocus
-                       class="w-full px-3 py-2 border rounded-md text-sm
-                              focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                              {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }}">
-                @if($errors->has('email'))
-                    <p class="mt-1 text-xs text-red-600">
-                        {{ $errors->first('email') }}
-                    </p>
-                @endif
-            </div>
-
-            {{-- PASSWORD --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ trans('global.login_password') }}
-                </label>
-                <input type="password"
-                       name="password"
-                       required
-                       class="w-full px-3 py-2 border rounded-md text-sm
-                              focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                              {{ $errors->has('password') ? 'border-red-500' : 'border-gray-300' }}">
-                @if($errors->has('password'))
-                    <p class="mt-1 text-xs text-red-600">
-                        {{ $errors->first('password') }}
-                    </p>
-                @endif
-            </div>
-
-            {{-- REMEMBER + FORGOT --}}
-            <div class="flex items-center justify-between">
-                <label class="flex items-center gap-2 text-sm text-gray-600">
-                    <input type="checkbox"
-                           name="remember"
-                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    {{ trans('global.remember_me') }}
-                </label>
-
-                @if(Route::has('password.request'))
-                    <a href="{{ route('password.request') }}"
-                       class="text-sm text-blue-600 hover:underline">
-                        {{ trans('global.forgot_password') }}
-                    </a>
-                @endif
-            </div>
-
-            {{-- LOGIN BUTTON --}}
-            <div class="pt-2">
-                <button type="submit"
-                        class="w-full py-2.5 bg-blue-600 text-white text-sm font-medium
-                               rounded-md hover:bg-blue-700 transition">
-                    {{ trans('global.login') }}
-                </button>
-            </div>
-
-            {{-- REGISTER LINK --}}
-            <div class="text-center pt-2">
-                <a href="{{ route('register') }}"
-                   class="text-sm text-blue-600 hover:underline">
-                    {{ trans('global.register') }}
-                </a>
-            </div>
-
-        </form>
     </div>
 </div>
+
+<!-- Signin Section -->
+<section class="signin-area section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xxl-6 col-lg-7">
+
+                <div class="signin-item">
+
+                    <h3>Sign In to Your Account</h3>
+
+                    {{-- SESSION MESSAGE --}}
+                    @if(session('message'))
+                        <div class="mb-3 p-2 text-sm bg-blue-100 text-blue-700">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
+
+                        {{-- EMAIL --}}
+                        <label for="email">Email</label>
+                        <input id="email"
+                               type="email"
+                               name="email"
+                               value="{{ old('email') }}"
+                               placeholder="Enter your email"
+                               required>
+
+                        @error('email')
+                            <small style="color:red;">{{ $message }}</small>
+                        @enderror
+
+
+                        {{-- PASSWORD --}}
+                        <label for="password">Password</label>
+                        <input id="password"
+                               type="password"
+                               name="password"
+                               placeholder="Enter your password"
+                               required>
+
+                        @error('password')
+                            <small style="color:red;">{{ $message }}</small>
+                        @enderror
+
+
+                        {{-- REMEMBER --}}
+                        <div style="margin:10px 0;">
+                            <label>
+                                <input type="checkbox" name="remember">
+                                Remember Me
+                            </label>
+                        </div>
+
+                        {{-- SUBMIT --}}
+                        <button type="submit" class="theme-btn w-100 text-center">
+                            Sign In
+                        </button>
+
+                    </form>
+
+                    <div class="info text-center mt-3">
+
+                        {{-- FORGOT PASSWORD --}}
+                        @if(Route::has('password.request'))
+                            <p class="line1">
+                                Or <a href="{{ route('password.request') }}">Forgot Password?</a>
+                            </p>
+                        @endif
+
+                       
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
 
 @endsection
