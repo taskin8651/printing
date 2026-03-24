@@ -170,123 +170,174 @@
 </section>
         <!-- Shop Section End -->
 
-    <!-- Featured Section Start -->
-      <section class="project-details-section fix section-padding">
+        <!-- Featured Products Section Start -->
+   <section class="shop-section fix section-padding">
     <div class="container">
 
         <div class="section-title text-center mb-5">
             <h2>Featured Products</h2>
         </div>
 
-        <div class="row g-4">
-
+        <div class="row">
             @foreach($featured as $product)
-            <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp">
+            <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp">
 
-                <div class="project-box-items-3">
-                    <div class="thumb">
-                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/project/10.jpg') }}">
+                <div class="shop-items style-2 mt-0">
 
-                        <div class="content">
-                            <p>Featured</p>
+                    <div class="shop-image">
+                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/shop/01.jpg') }}">
 
-                            <h3>
+                        <ul class="product-icon d-grid justify-content-center align-items-center">
+                            <li>
                                 <a href="{{ route('product.show', $product->slug) }}">
-                                    {{ $product->name }}
+                                    <i class="far fa-eye"></i>
                                 </a>
-                            </h3>
+                            </li>
+                            <li>
+                                <a href="{{ route('product.show', $product->slug) }}">
+                                    <i class="fal fa-cart-plus"></i>
+                                </a>
+                            </li>
+                        </ul>
 
-                            <a href="{{ route('product.show', $product->slug) }}" class="icon">
-                                <i class="far fa-long-arrow-right"></i>
-                            </a>
-                        </div>
+                        <div class="offer-text">Featured</div>
                     </div>
+
+                    <div class="shop-content">
+                        <h5>
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                {{ $product->name }}
+                            </a>
+                        </h5>
+
+                        <ul class="price-list">
+                            <li>₹{{ $product->min_price }}</li>
+                        </ul>
+                    </div>
+
                 </div>
 
             </div>
             @endforeach
-
         </div>
+
     </div>
 </section>
+<!-- Featured Products Section End -->
 
-<section class="project-details-section fix section-padding pt-0">
+
+<!-- Best Seller Section Start -->
+<section class="shop-section fix section-padding pt-0">
     <div class="container">
 
         <div class="section-title text-center mb-5">
             <h2>Best Seller</h2>
         </div>
 
-        <div class="row g-4">
-
+        <div class="row">
             @foreach($bestSeller as $product)
-            <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp">
+            <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp">
 
-                <div class="project-box-items-3">
-                    <div class="thumb">
-                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/project/10.jpg') }}">
+                <div class="shop-items style-2 mt-0">
 
-                        <div class="content">
-                            <p>Best Seller</p>
+                    <div class="shop-image">
+                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/shop/01.jpg') }}">
 
-                            <h3>
+                        <ul class="product-icon d-grid justify-content-center align-items-center">
+                            <li>
                                 <a href="{{ route('product.show', $product->slug) }}">
-                                    {{ $product->name }}
+                                    <i class="far fa-eye"></i>
                                 </a>
-                            </h3>
+                            </li>
+                            <li>
+                                <a href="{{ route('product.show', $product->slug) }}">
+                                    <i class="fal fa-cart-plus"></i>
+                                </a>
+                            </li>
+                        </ul>
 
-                            <a href="{{ route('product.show', $product->slug) }}" class="icon">
-                                <i class="far fa-long-arrow-right"></i>
-                            </a>
-                        </div>
+                        <div class="offer-text">Best Seller</div>
                     </div>
+
+                    <div class="shop-content">
+                        <h5>
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                {{ $product->name }}
+                            </a>
+                        </h5>
+
+                        <ul class="price-list">
+                            <li>₹{{ $product->min_price }}</li>
+                        </ul>
+                    </div>
+
                 </div>
 
             </div>
             @endforeach
-
         </div>
+
     </div>
 </section>
+<!-- Best Seller Section End -->
 
-<section class="project-details-section fix section-padding pt-0">
+
+<!-- Trending Products Section Start -->
+<section class="shop-section fix section-padding pt-0">
     <div class="container">
 
         <div class="section-title text-center mb-5">
             <h2>Trending Products</h2>
         </div>
 
-        <div class="row g-4">
-
+        <div class="row">
             @foreach($trending as $product)
-            <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp">
+            <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp">
 
-                <div class="project-box-items-3">
-                    <div class="thumb">
-                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/project/10.jpg') }}">
+                <div class="shop-items style-2 mt-0">
 
-                        <div class="content">
-                            <p>Trending</p>
+                    <div class="shop-image">
+                        <img src="{{ $product->getFirstMediaUrl('product_image') ?: asset('assets/img/shop/01.jpg') }}">
 
-                            <h3>
+                        <ul class="product-icon d-grid justify-content-center align-items-center">
+                            <li>
                                 <a href="{{ route('product.show', $product->slug) }}">
-                                    {{ $product->name }}
+                                    <i class="far fa-eye"></i>
                                 </a>
-                            </h3>
+                            </li>
+                            <li>
+                                <a href="{{ route('product.show', $product->slug) }}">
+                                    <i class="fal fa-cart-plus"></i>
+                                </a>
+                            </li>
+                        </ul>
 
-                            <a href="{{ route('product.show', $product->slug) }}" class="icon">
-                                <i class="far fa-long-arrow-right"></i>
-                            </a>
-                        </div>
+                        <div class="offer-text">Trending</div>
                     </div>
+
+                    <div class="shop-content">
+                        <h5>
+                            <a href="{{ route('product.show', $product->slug) }}">
+                                {{ $product->name }}
+                            </a>
+                        </h5>
+
+                        <ul class="price-list">
+                            <li>₹{{ $product->min_price }}</li>
+                        </ul>
+                    </div>
+
                 </div>
 
             </div>
             @endforeach
-
         </div>
+
     </div>
 </section>
+
+<!-- Trending Products Section End -->
+ 
 
 <section class="testimonial-section fix section-bg section-padding">
     <div class="container">
